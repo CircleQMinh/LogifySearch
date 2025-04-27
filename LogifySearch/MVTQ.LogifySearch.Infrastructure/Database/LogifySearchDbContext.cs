@@ -11,6 +11,8 @@ namespace MVTQ.LogifySearch.Infrastructure.Database
 {
     public class LogifySearchDbContext : IdentityDbContext<User>
     {
+        public DbSet<User> Users {  get; set; }
+
         public LogifySearchDbContext(DbContextOptions<LogifySearchDbContext> options) : base(options)
         {
 
@@ -33,6 +35,8 @@ namespace MVTQ.LogifySearch.Infrastructure.Database
                 }
 
             }
+
+
             //builder.ApplyConfiguration(new RoleConfiguration());
         }
 

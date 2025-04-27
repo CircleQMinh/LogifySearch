@@ -8,17 +8,17 @@ namespace MVTQ.LogifySearch.Domain.Common
 {
     public class PaginationFilter
     {
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+        public int Offset { get; set; }
+        public int Limit { get; set; }
         public PaginationFilter()
         {
-            this.PageNumber = 1;
-            this.PageSize = 10;
+            this.Offset = 1;
+            this.Limit = 10;
         }
-        public PaginationFilter(int pageNumber, int pageSize)
+        public PaginationFilter(int offset, int limit)
         {
-            this.PageNumber = pageNumber;
-            this.PageSize = pageSize;
+            this.Offset = offset;
+            this.Limit = limit;
         }
     }
 }

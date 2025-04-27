@@ -1,6 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace MVTQ.LogifySearch.Models.Account
+namespace MVTQ.LogifySearch.Domain.Model.Account
 {
     public class LoginViewModel
     {
@@ -13,5 +18,4 @@ namespace MVTQ.LogifySearch.Models.Account
 
         public bool RememberMe { get; set; }
     }
-
 }

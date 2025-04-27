@@ -87,8 +87,8 @@ namespace MVTQ.LogifySearch.Infrastructure.Database.Repositories
                 paginationFilter = new PaginationFilter();
             }
 
-            return await query.AsNoTracking().Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
-               .Take(paginationFilter.PageSize)
+            return await query.AsNoTracking().Skip((paginationFilter.Offset - 1) * paginationFilter.Limit)
+               .Take(paginationFilter.Limit)
                .ToListAsync();
         }
 

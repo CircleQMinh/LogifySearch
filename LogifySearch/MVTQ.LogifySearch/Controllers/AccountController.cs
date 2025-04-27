@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using MVTQ.LogifySearch.Application.Interfaces.Services;
+using MVTQ.LogifySearch.Domain.Common;
 using MVTQ.LogifySearch.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
-using MVTQ.LogifySearch.Models.Account;
+using MVTQ.LogifySearch.Domain.Model.Account;
 
 namespace MVTQ.LogifySearch.Controllers
 {
@@ -15,15 +13,18 @@ namespace MVTQ.LogifySearch.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IUserService _userService;
 
         public AccountController(
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IUserService userService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+            _userService = userService;
         }
         [AllowAnonymous]
         [HttpGet]
@@ -67,6 +68,17 @@ namespace MVTQ.LogifySearch.Controllers
         public async Task<IActionResult> ManageUsers()
         {
             return View();
+        }
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUsers([FromQuery]UserSearchModel filter)
+        {
+            var users = await _userService.GetUsers(
+                q=> (string.IsNullOrEmpty(filter.Search) ||q.UserName.Contains(filter.Search) || q.Email.Contains(filter.Search)),
+                q => q.OrderBy(u => u.UserName), 
+                string.IsNullOrEmpty(filter.Roles) ? new List<string>() : filter.Roles.Split(",").ToList(), 
+                new PaginationFilter { Limit = filter.Limit, Offset = filter.Offset}
+                );
+            return Json(users);
         }
     }
 }

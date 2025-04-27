@@ -1,7 +1,106 @@
-﻿@*
+﻿@using MVTQ.LogifySearch.Domain.Enums
+@using MVTQ.LogifySearch.Domain.Extensions
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    ViewData["Title"] = "Manage User";
 
 }
-<p>Manager Users</p>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+    </ol>
+</nav>
+
+<div class="container my-4">
+    <div class="row align-items-center">
+        <div class="col-4">
+            <label for="" class="form-label">Username / Email address:</label>
+            <input type="text" class="form-control" id="searchBar" placeholder="Search...">
+        </div>
+        <div class="col-6">
+            <label for="" class="form-label">Roles:</label>
+            <select class="form-select" id="filterRole" data-placeholder="Filter by Roles" multiple>
+                @foreach (AppRole role in Enum.GetValues(typeof(AppRole)))
+                {
+                    <option value="@role"> @(role.GetDescription())  </option>
+                }
+            </select>
+        </div>
+        <div class="col-2">
+            <label for="" class="form-label"></label>
+            <button class="btn btn-primary w-100" id="filterBtn">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<table id="ManagerUsers" class="table table-dark table-striped" 
+       data-toggle="table"
+       data-ajax="ajaxManagerUsers"
+       data-side-pagination="server"
+       data-pagination="true"
+       data-total-field="count"
+       data-data-field="items">
+    <thead>
+        <tr>
+            <th data-field="userName" scope="col">UserName</th>
+            <th data-field="email" scope="col">Email</th>
+            <th data-field="roles" scope="col">Roles</th>
+            <th data-field="operate"
+                data-formatter="ManagerUsersActions"
+                data-events="ManagerUsersEvents">
+                Item Price
+            </th>
+        </tr>
+    </thead>
+   
+</table>
+
+
+<script>
+    InitChosenSelect("filterRole")
+
+    window.ajaxManagerUsers = params => {
+        const url = "/Account/GetUsers"
+        var search = $("#searchBar").val()
+        var roles = $("#filterRole").val().join(',')
+        params.data.search = search
+        params.data.roles = roles
+        $.get(`${url}?${$.param(params.data)}`).then(function (res) {
+            params.success(res)
+        })
+    }
+
+    window.ManagerUsersActions = () => [
+      '<a class="like" href="javascript:void(0)" title="Like">',
+      '<i class="fa fa-heart"></i>',
+      '</a>  ',
+      '<a class="remove" href="javascript:void(0)" title="Remove">',
+      '<i class="fa fa-trash"></i>',
+      '</a>'
+    ].join('')
+
+    window.ManagerUsersEvents = {
+      'click .like': (e, value, row) => {
+        alert(`You click like action, row: ${JSON.stringify(row)}`)
+      },
+      'click .remove': (e, value, row) => {
+        $table.bootstrapTable('remove', {
+          field: 'id',
+          values: [row.id]
+        })
+      }
+    }
+
+    $("#filterBtn").click((e)=>{
+        ReloadBootstrapTable("ManagerUsers")
+    })
+
+</script>
+
